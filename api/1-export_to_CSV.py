@@ -9,7 +9,6 @@ import requests
 import sys
 
 
-
 if __name__ == "__main__":
     to_do = requests.get('https://jsonplaceholder.typicode.com/todos?userId=' +
                          sys.argv[1], timeout=5)

@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     csv_f = '{}.csv'.format(sys.argv[1])
     with open(csv_f, mode='w') as csv_file:
-        csv_writer = csv.writer(csv_file, delimiter=',', quoting=csv.QUOTE_ALL)
+        csv_writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
         for task in json_todo:
             csv_writer.writerow([json_names['id'], json_names['username'],
                                  task["completed"], task["title"]])

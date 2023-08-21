@@ -3,9 +3,10 @@
 Python script that for a given employee ID returns all his todo list
 and exports the data in json format
 """
+import json
 import requests
 import sys
-import json
+
 
 if __name__ == "__main__":
     to_do = requests.get('https://jsonplaceholder.typicode.com/todos?userId=' +
@@ -26,23 +27,18 @@ if __name__ == "__main__":
             tasks_completed += 1
             titles_completed.append(task["title"])
 
-    tasks_data = []
+    my_dict = {}
+    this_list = []
 
-    for task in json_todo:
-        task_data = {
-            "task": task["title"],
-            "completed": task["completed"],
-            "username": json_names["name"]
-        }
-        tasks_data.append(task_data)
+    for item in json_todo:
+        task_dict = {}
+        task_dict["task"] = item['title']
+        task_dict["completed"] = item['completed']
+        task_dict["username"] = json_names['username']
+        this_list.append(task_dict)
 
-    employee_data = {
-        sys.argv[1]: tasks_data
-    }
+    my_dict[sys.argv[1]] = this_list
 
-    json_data = json.dumps(employee_data)
-
-    json_f = '{}.json'.format(sys.argv[1])
-
-    with open(json_f, "w") as file:
-        file.write(json_data)
+    json_f = sys.argv[1] + '.json'
+    with open(json_f, mode='w') as json_file:
+        json.dump(my_dict, json_file)

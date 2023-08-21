@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 """Python script that for a given employee ID returns all his todo list"""
 
-import sys
 import requests
+import sys
 
 
 if __name__ == "__main__":

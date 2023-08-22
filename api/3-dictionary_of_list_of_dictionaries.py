@@ -10,43 +10,45 @@ import sys
 
 
 if __name__ == "__main__":
-    all_tasks = {}
-    # Get all employees
-    for user_id in range(1, 11):
+    # requête HTTP GET pour récupérer les noms des employés
+    names = requests.get('https://jsonplaceholder.typicode.com/users')
+
+    # convertit la réponse JSON en un objet Python
+    json_names = names.json()
+
+    # Création d'un dictionnaire vide pour stocker les tâches de chaque employé
+    general_dict = {}
+
+    # Parcours de chaque employé dans la liste des noms
+    for user in json_names:
+
+        # Création d'une liste vide pour stocker les tâches de cet employé
+        this_list = []
+
+        # requête HTTP GET pour récupérer les tâches de l'employé
         to_do = requests.get(
-            'https://jsonplaceholder.typicode.com/todos?userId='
-            + str(user_id), timeout=5)
-        names = requests.get(
-            'https://jsonplaceholder.typicode.com/users/'
-            + str(user_id), timeout=5)
+            'https://jsonplaceholder.typicode.com/todos?userId=' +
+            str(user['id']))
 
-        # Convert to JSON
+        # Conversion de la réponse JSON en un objet Python
         json_todo = to_do.json()
-        json_names = names.json()
 
-        # Count completed tasks
-        tasks_completed = 0
-        titles_completed = []
+        # Parcours de chaque tâche dans la liste des tâches de l'employé
+        for item in json_todo:
 
-        # Task data construction
-        for task in json_todo:
-            if task["completed"]:
-                tasks_completed += 1
-                titles_completed.append(task["title"])
+            # Création d'un dictionnaire pour stocker les détails de la tâche
+            task_dict = {}
+            task_dict["task"] = item['title']
+            task_dict["completed"] = item['completed']
+            task_dict["username"] = user['username']
+            this_list.append(task_dict)
 
-        # Employee data construction
-        employee_data = {
-            "username": json_names['username'],
-            "tasks": [{"task": title, "completed": True}
-                      for title in titles_completed]
-        }
+        # Ajout de ce dictionnaire à la liste des tâches de l'employé
+        general_dict[user['id']] = this_list
 
-        # Employee data storage
-        all_tasks[str(user_id)] = employee_data
+    # Définition du nom du fichier JSON
+    json_f = 'todo_all_employees.json'
 
-    # Export JSON
-    json_data = json.dumps(all_tasks)
-
-    # Write to file
-    with open('todo_all_employees.json', mode='w') as json_file:
-        json_file.write(json_data)
+    # Écriture du dictionnaire général dans le fichier JSON
+    with open(json_f, mode='w') as json_file:
+        json.dump(general_dict, json_file)
